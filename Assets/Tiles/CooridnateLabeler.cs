@@ -2,7 +2,13 @@ using UnityEngine;
 using TMPro;
 using System;
 
+/// <summary>
+/// This file needs to be moved into the editor folder on build
+/// </summary>
+
+
 [ExecuteAlways] // Works in both edit mode and play mode
+[RequireComponent(typeof(TextMeshPro))]
 public class CooridnateLabeler : MonoBehaviour
 {
 
@@ -31,11 +37,11 @@ public class CooridnateLabeler : MonoBehaviour
             UpdateObjectName();
         }
 
-        ColorCoordinates();
+        SetLabelColor();
         ToggleLabels();
     }
 
-    private void ColorCoordinates()
+    private void SetLabelColor()
     {
         if (wayPoint.IsPlaceable)
         {

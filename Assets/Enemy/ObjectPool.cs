@@ -1,12 +1,13 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
     [SerializeField] GameObject enemyPrefap;
-    [SerializeField] float spawnTimer = 1f;
-    [SerializeField] int poolSize = 5;
+
+    // range used to prevent values from being negative
+    [SerializeField] [Range(0,50)] int poolSize = 5;
+    [SerializeField] [Range(0.1f,30f)] float spawnTimer = 1f;
 
     private GameObject[] pool;
 
