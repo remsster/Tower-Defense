@@ -35,6 +35,7 @@ public class CooridnateLabeler : MonoBehaviour
         {
             DisplayCoordinates();
             UpdateObjectName();
+            label.enabled = true;
         }
 
         SetLabelColor();
