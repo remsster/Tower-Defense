@@ -7,43 +7,53 @@ using UnityEngine;
 public class EnemyMover : MonoBehaviour
 {
     [SerializeField] [Range(0f, 5f)] float speed = 1f;
-    [SerializeField] List<WayPoint> path = new List<WayPoint>();
 
     private Enemy enemy;
+    private List<Node> path = new List<Node>();
+    private GridManager gridManager;
+    private PathFinder pathFinder;
 
-
-    private void Start()
+    // Unity Methods
+    private void Awake()
     {
         enemy = GetComponent<Enemy>();
+        gridManager = FindObjectOfType<GridManager>();
+        pathFinder = FindObjectOfType<PathFinder>();
     }
 
     private void OnEnable()
     {
-        FindPath();
         ReturnToStart();
-        StartCoroutine(FollowPath());
+        // Recalculate path when object is re enabled at the start
+        RecalculatePath(true);
+        
     }
+    // Unity Methods END
 
-    private void FindPath()
+    private void RecalculatePath(bool resetPath)
     {
+        Vector2Int coordinates = new Vector2Int();
+
+        if (resetPath)
+        {
+            coordinates = pathFinder.StartCoordinates;
+        }
+        else
+        {
+            coordinates = gridManager.GetCoordinatesFromPosition(transform.position);
+        }
+
+        StopAllCoroutines();
         // Clear path first before building a new path
         path.Clear();
+        path = pathFinder.GetNewPath(coordinates);
 
-        GameObject parent = GameObject.FindGameObjectWithTag("Path");
-
-        foreach (Transform child in parent.transform)
-        {
-            WayPoint wayPoint = child.GetComponent<WayPoint>();
-            if (wayPoint != null)
-            {
-                path.Add(wayPoint);
-            }
-        }
+        StartCoroutine(FollowPath());
     }
 
     private void ReturnToStart()
     {
-        transform.position = path[0].transform.position;
+        transform.position = gridManager.GetPositionFromCoordinates(pathFinder.StartCoordinates);
     }
 
     private void FinishPath()
@@ -54,10 +64,10 @@ public class EnemyMover : MonoBehaviour
 
     private IEnumerator FollowPath()
     {
-        foreach(var wayPoint in path)
+        for(int i = 1; i < path.Count; i++)
         {
             Vector3 startPosition = transform.position;
-            Vector3 endPosition = wayPoint.transform.position;
+            Vector3 endPosition = gridManager.GetPositionFromCoordinates(path[i].coordinates);
             float travelPercent = 0;
 
             transform.LookAt(endPosition);
